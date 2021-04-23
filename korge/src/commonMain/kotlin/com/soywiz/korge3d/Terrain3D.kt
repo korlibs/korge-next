@@ -4,11 +4,9 @@ import com.soywiz.kds.iterators.fastForEachWithIndex
 import com.soywiz.kmem.clamp
 import com.soywiz.korag.AG
 import com.soywiz.korim.bitmap.Bitmap
-import com.soywiz.korim.format.readBitmap
-import com.soywiz.korio.file.VfsFile
 import com.soywiz.korma.geom.Matrix3D
 import com.soywiz.korma.geom.Vector3D
-import kotlin.math.max
+import com.soywiz.korma.geom.multiplyMatrix3D
 
 interface HeightMap {
     operator fun get(x: Float, z: Float): Float
@@ -21,12 +19,12 @@ class HeightMapConstant(val height: Float) : HeightMap {
 class HeightMapBitmap(val bitmap:Bitmap) : HeightMap{
     override fun get(x: Float, z: Float): Float {
         val x1 = when {
-            x < 0 -> 0.0
+            x < 0.0f -> 0.0
             x > bitmap.width -> bitmap.width.toDouble()
             else -> x.toDouble()
         }
         val z1 = when {
-            z < 0 -> 0.0
+            z < 0.0f -> 0.0
             z > bitmap.height -> bitmap.height.toDouble()
             else -> z.toDouble()
         }
@@ -53,7 +51,7 @@ class Terrain3D(
     val width: Float,
     val depth: Float,
     var heightMap: HeightMap,
-    val heightScale:Float
+    val heightScale: Float
 ) : View3D() {
 
     var stepX = 1f
@@ -62,10 +60,8 @@ class Terrain3D(
     private val meshBuilder3D = MeshBuilder3D(AG.DrawType.TRIANGLE_STRIP)
     private var mesh: Mesh3D = createMesh()
 
-
     private val uniformValues = AG.UniformValues()
     private val rs = AG.RenderState(depthFunc = AG.CompareMode.LESS_EQUAL)
-    private val tempMat1 = Matrix3D()
     private val tempMat2 = Matrix3D()
     private val tempMat3 = Matrix3D()
 
@@ -76,8 +72,9 @@ class Terrain3D(
         val hr = getHeight(x + 1, z)
         val hf = getHeight(x, z + 1)
         val hb = getHeight(x, z - 1)
-        val v = Vector3D(hl - hr, 2f, hb - hf).normalize()
-        return v
+        return Vector3D(hl - hr, 2f, hb - hf).apply {
+            normalize()
+        }
     }
 
     fun createMesh(): Mesh3D {
@@ -163,7 +160,7 @@ class Terrain3D(
                         this[u_ViewMat] = transform.globalMatrix
                         this[u_ModMat] = modelMat
                         //this[u_NormMat] = tempMat3.multiply(tempMat2, localTransform.matrix).invert().transpose()
-                        this[u_NormMat] = tempMat3.multiply(tempMat2, transform.globalMatrix)//.invert()
+                        this[u_NormMat] = multiplyMatrix3D(tempMat2, transform.globalMatrix, tempMat3)//.invert()
 
                         this[u_Shininess] = meshMaterial?.shininess ?: 0.5f
                         this[u_IndexOfRefraction] = meshMaterial?.indexOfRefraction ?: 1f
@@ -179,7 +176,7 @@ class Terrain3D(
                             val lightColor = light.color
                             this[lights[index].u_sourcePos] = light.transform.translation
                             this[lights[index].u_color] =
-                                light.colorVec.setTo(lightColor.rf, lightColor.gf, lightColor.bf, 1f)
+                                light.colorVec.setTo(lightColor.rf, lightColor.gf, lightColor.bf)
                             this[lights[index].u_attenuation] = light.attenuationVec.setTo(
                                 light.constantAttenuation,
                                 light.linearAttenuation,
@@ -190,8 +187,6 @@ class Terrain3D(
                     renderState = rs
                 )
             }
-
         }
     }
-
 }

@@ -1,18 +1,18 @@
 package com.soywiz.korma.geom
 
 data class EulerRotation(
-    var x: Angle = 0.degrees,
-    var y: Angle = 0.degrees,
-    var z: Angle = 0.degrees
+    var x: Angle = 0f.degrees,
+    var y: Angle = 0f.degrees,
+    var z: Angle = 0f.degrees
 ) {
     companion object {
         fun toQuaternion(roll: Angle, pitch: Angle, yaw: Angle, out: Quaternion = Quaternion()): Quaternion {
-            val cr = cos(roll * 0.5)
-            val sr = sin(roll * 0.5)
-            val cp = cos(pitch * 0.5)
-            val sp = sin(pitch * 0.5)
-            val cy = cos(yaw * 0.5)
-            val sy = sin(yaw * 0.5)
+            val cr = cos(roll * 0.5).toFloat()
+            val sr = sin(roll * 0.5).toFloat()
+            val cp = cos(pitch * 0.5).toFloat()
+            val sp = sin(pitch * 0.5).toFloat()
+            val cy = cos(yaw * 0.5).toFloat()
+            val sy = sin(yaw * 0.5).toFloat()
             return out.setTo(
                 (cy * cp * sr - sy * sp * cr),
                 (sy * cp * sr + cy * sp * cr),
@@ -38,5 +38,5 @@ data class EulerRotation(
     fun setTo(other: EulerRotation): EulerRotation = setTo(other.x, other.y, other.z)
 
     private val tempQuat: Quaternion by lazy { Quaternion() }
-    fun toMatrix(out: Matrix3D = Matrix3D()): Matrix3D = tempQuat.setEuler(this).toMatrix(out)
+    fun toMatrix(): Matrix3D = tempQuat.setEuler(this).toMatrix()
 }

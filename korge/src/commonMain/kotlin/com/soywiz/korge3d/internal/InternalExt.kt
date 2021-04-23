@@ -61,8 +61,8 @@ internal class Vector3DTemps {
 		}
 	}
 
-	operator fun Vector3D.plus(that: Vector3D) = alloc().setToFunc { this[it] + that[it] }
-	operator fun Vector3D.minus(that: Vector3D) = alloc().setToFunc { this[it] - that[it] }
+	operator fun Vector3D.plus(that: Vector3D) = alloc().setTo { this[it] + that[it] }
+	operator fun Vector3D.minus(that: Vector3D) = alloc().setTo { this[it] - that[it] }
 }
 
 internal fun FloatArrayList.toFBuffer(): FBuffer = toFloatArray().toFBuffer()

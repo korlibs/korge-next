@@ -6,7 +6,7 @@ import com.soywiz.korma.geom.Vector3D
 import com.soywiz.korma.geom.scale
 
 @Korge3DExperimental
-fun Container3D.shape3D(width: Double=1.0, height: Double=1.0, depth: Double=1.0, drawCommands: MeshBuilder3D.() -> Unit): Shape3D {
+fun Container3D.shape3D(width: Float=1f, height: Float=1f, depth: Float=1f, drawCommands: MeshBuilder3D.() -> Unit): Shape3D {
    return  Shape3D(width, height, depth, drawCommands).addTo(this)
 }
 
@@ -15,13 +15,13 @@ fun Container3D.shape3D(width: Double=1.0, height: Double=1.0, depth: Double=1.0
  */
 @Korge3DExperimental
 class Shape3D(
-    initWidth: Double, initHeight: Double, initDepth: Double,
+    initWidth: Float, initHeight: Float, initDepth: Float,
     drawCommands: MeshBuilder3D.() -> Unit
 ) : ViewWithMesh3D(createMesh(drawCommands).copy()) {
 
-    var width: Double = initWidth
-    var height: Double = initHeight
-    var depth: Double = initDepth
+    var width: Float = initWidth
+    var height: Float = initHeight
+    var depth: Float = initDepth
 
     override fun prepareExtraModelMatrix(mat: Matrix3D) {
         mat.identity().scale(width, height, depth)
@@ -37,18 +37,18 @@ class Shape3D(
 
 
 @Korge3DExperimental
-inline fun Container3D.cube(width: Int, height: Int, depth: Int, callback: Cube3D.() -> Unit = {}): Cube3D = cube(width.toDouble(), height.toDouble(), depth.toDouble(), callback)
+inline fun Container3D.cube(width: Int, height: Int, depth: Int, callback: Cube3D.() -> Unit = {}): Cube3D = cube(width.toFloat(), height.toFloat(), depth.toFloat(), callback)
 
 @Korge3DExperimental
 inline fun Container3D.cube(
-    width: Double = 1.0,
-    height: Double = width,
-    depth: Double = height,
+    width: Float = 1f,
+    height: Float = width,
+    depth: Float = height,
     callback: Cube3D.() -> Unit = {}
 ): Cube3D = Cube3D(width, height, depth).addTo(this, callback)
 
 @Korge3DExperimental
-class Cube3D(var width: Double, var height: Double, var depth: Double) : ViewWithMesh3D(mesh.copy()) {
+class Cube3D(var width: Float, var height: Float, var depth: Float) : ViewWithMesh3D(mesh.copy()) {
     override fun prepareExtraModelMatrix(mat: Matrix3D) {
         mat.identity().scale(width, height, depth)
     }
@@ -69,8 +69,10 @@ class Cube3D(var width: Double, var height: Double, var depth: Double) : ViewWit
             vector3DTemps {
                 fun face(pos: Vector3D) {
                     val dims = (0 until 3).filter { pos[it] == 0f }
-                    val normal = Vector3D().setToFunc { if (pos[it] != 0f) 1f else 0f }
-                    val dirs = Array(2) { dim -> Vector3D().setToFunc { if (it == dims[dim]) .5f else 0f } }
+                    val normal = Vector3D { if (pos[it] != 0f) 1f else 0f }
+                    val dirs = Array(2) { dim ->
+                        Vector3D { if (it == dims[dim]) .5f else 0f }
+                    }
                     val dx = dirs[0]
                     val dy = dirs[1]
 

@@ -6,7 +6,7 @@ import com.soywiz.korge.render.*
 import com.soywiz.korma.geom.*
 
 @Korge3DExperimental
-class RenderContext3D() {
+class RenderContext3D {
 	lateinit var ag: AG
 	lateinit var rctx: RenderContext
 	val shaders = Shaders3D()
@@ -21,6 +21,5 @@ class RenderContext3D() {
 	val cameraMatInv: Matrix3D = Matrix3D()
 	val dynamicVertexBufferPool = Pool { ag.createVertexBuffer() }
     val dynamicIndexBufferPool = Pool { ag.createIndexBuffer() }
-	val ambientColor: Vector3D = Vector3D()
-
+	val ambientColor: Vector3D = Vector3D() // TODO: This shouldn't be a Vector3D
 }

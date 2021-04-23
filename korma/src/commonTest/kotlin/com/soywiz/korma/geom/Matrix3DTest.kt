@@ -46,7 +46,6 @@ class Matrix3DTest {
                 618f,    644f,    670f,    696f,
                 986f,    1028f,   1070f,   1112f,
                 1354f,   1412f,   1470f,   1528f
-
             ),
             (l * r)
         )
@@ -56,14 +55,14 @@ class Matrix3DTest {
     fun testMatrix4() {
         val matrix = Matrix3D()
         val identityData = listOf(
-            1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
+            1f, 0f, 0f, 0f,
+            0f, 1f, 0f, 0f,
+            0f, 0f, 1f, 0f,
+            0f, 0f, 0f, 1f
         )
-        assertEquals(identityData, matrix.data.map { it.toInt() })
-        val matrix2 = matrix.clone().transpose()
-        assertEquals(identityData, matrix2.data.map { it.toInt() })
+        assertEquals(identityData, matrix.data.toList())
+        val matrix2 = matrix.copy().transpose()
+        assertEquals(identityData, matrix2.data.toList())
     }
 
     @Test
@@ -100,32 +99,32 @@ class Matrix3DTest {
             val mat = Matrix(2, 0, 0, 2, 20, 20)
             val mat4 = mat.toMatrix3D()
             assertEquals(Point(40, 40), mat.transform(Point(10, 10)))
-            assertEquals(Vector3D(40, 40, 0), mat4.transform(Vector3D(10f, 10f, 0f)))
+            assertEquals(Vector3D(40f, 40f, 0f), mat4.transform(Vector3D(10f, 10f, 0f)))
         }
         run {
             val mat = Matrix(1, 2, 3, 4, 5, 6)
             val mat4 = mat.toMatrix3D()
             assertEquals(Point(45, 66), mat.transform(Point(10, 10)))
-            assertEquals(Vector3D(45, 66, 0), mat4.transform(Vector3D(10f, 10f, 0f)))
+            assertEquals(Vector3D(45f, 66f, 0f), mat4.transform(Vector3D(10f, 10f, 0f)))
         }
     }
 
     @Test
     fun ortho() {
         run {
-            val projection = Matrix3D().setToOrtho(0f, 200f, 100f, 0f, 0f, -20f)
-            assertEquals(Vector3D(0, 0, -1), Vector3D(100f, 50f, 0f).transform(projection))
-            assertEquals(Vector3D(0, 0, +1), Vector3D(100f, 50f, 20f).transform(projection))
+            val projection = Matrix3D().apply { setToOrtho(0f, 200f, 100f, 0f, 0f, -20f) }
+            assertEquals(Vector3D(0f, 0f, -1f), Vector3D(100f, 50f, 0f).transform(projection))
+            assertEquals(Vector3D(0f, 0f, +1f), Vector3D(100f, 50f, 20f).transform(projection))
         }
         run {
-            val projection = Matrix3D().setToOrtho(0f, 200f, 100f, 0f, 0f, +20f)
-            assertEquals(Vector3D(0, 0, -1), Vector3D(100f, 50f, 0f).transform(projection))
-            assertEquals(Vector3D(0, 0, +1), Vector3D(100f, 50f, -20f).transform(projection))
+            val projection = Matrix3D().apply { setToOrtho(0f, 200f, 100f, 0f, 0f, +20f) }
+            assertEquals(Vector3D(0f, 0f, -1f), Vector3D(100f, 50f, 0f).apply { transform(projection) })
+            assertEquals(Vector3D(0f, 0f, +1f), Vector3D(100f, 50f, -20f).apply { transform(projection) })
         }
         run {
-            val projection = Matrix3D().setToOrtho(Rectangle(0, 0, 200, 100), 0f, +20f)
-            assertEquals(Vector3D(0, 0, -1), Vector3D(100f, 50f, 0f).transform(projection))
-            assertEquals(Vector3D(0, 0, +1), Vector3D(100f, 50f, -20f).transform(projection))
+            val projection = Matrix3D().apply { setToOrtho(Rectangle(0, 0, 200, 100), 0f, +20f) }
+            assertEquals(Vector3D(0f, 0f, -1f), Vector3D(100f, 50f, 0f).apply { transform(projection) })
+            assertEquals(Vector3D(0f, 0f, +1f), Vector3D(100f, 50f, -20f).apply { transform(projection) })
         }
     }
 
@@ -141,9 +140,9 @@ class Matrix3DTest {
 
     @Test
     fun rotation() {
-        assertEquals(Vector3D(0, 10, 0), Vector3D(10, 0, 0).transform(Matrix3D().setToRotationZ(90.degrees)))
-        assertEquals(Vector3D(-10, 0, 0), Vector3D(10, 0, 0).transform(Matrix3D().setToRotationZ(180.degrees)))
-        assertEquals(Vector3D(0, 10, 0), Vector3D(10, 0, 0).transform(Matrix3D().setToRotation(90.degrees, Vector3D(0, 0, 1))))
+        assertEquals(Vector3D(0f, 10f, 0f), Vector3D(10f, 0f, 0f).transform(Matrix3D().setToRotationZ(90.degrees)))
+        assertEquals(Vector3D(-10f, 0f, 0f), Vector3D(10f, 0f, 0f).transform(Matrix3D().setToRotationZ(180.degrees)))
+        assertEquals(Vector3D(0f, 10f, 0f), Vector3D(10f, 0f, 0f).transform(Matrix3D().setToRotation(90.degrees, Vector3D(0f, 0f, 1f))))
     }
     val transMat = Matrix3D.fromRows(
         1f, 0f, 0f, 1f,
@@ -157,17 +156,17 @@ class Matrix3DTest {
         assertEquals(
             Matrix3D(),
             Matrix3D().setTRS(
-                Position3D(0, 0, 0),
+                Position3D(0f, 0f, 0f),
                 Quaternion(),
-                Scale3D(1, 1, 1)
+                Scale3D(1f, 1f, 1f)
             )
         )
         assertEquals(
             transMat,
             Matrix3D().setTRS(
-                Position3D(1, 2, 3),
+                Position3D(1f, 2f, 3f),
                 Quaternion(),
-                Scale3D(1, 1, 1)
+                Scale3D(1f, 1f, 1f)
             )
         )
     }
@@ -179,19 +178,19 @@ class Matrix3DTest {
         val scale = Scale3D()
         transMat.getTRS(pos, quat, scale)
 
-        assertEquals(Position3D(1, 2, 3), pos)
+        assertEquals(Position3D(1f, 2f, 3f), pos)
     }
 
     @Test
     fun testSetGetTRS() {
         val mat = Matrix3D()
-        val opos = Position3D(1, 2, 3)
+        val opos = Position3D(1f, 2f, 3f)
         val oquat = Quaternion().setEuler(15.degrees, 30.degrees, 60.degrees)
-        val oscale = Scale3D(1, 2, 3)
+        val oscale = Scale3D(1f, 2f, 3f)
 
-        val pos = Position3D().copyFrom(opos)
-        val quat = Quaternion().copyFrom(oquat)
-        val scale = Scale3D().copyFrom(oscale)
+        val pos = opos.copy()
+        val quat = oquat.copy()
+        val scale = oscale.copy()
 
         mat.setTRS(pos, quat, scale)
         mat.getTRS(pos, quat, scale)
@@ -203,18 +202,18 @@ class Matrix3DTest {
 
     @Test
     fun testQuat() {
-        assertEquals(Quaternion(0.7, 0.0, 0.0, 0.7).round(1), Quaternion().setEuler(90.degrees, 0.degrees, 0.degrees).round(1))
-        assertEquals(Quaternion(0.0, 0.7, 0.0, 0.7).round(1), Quaternion().setEuler(0.degrees, 90.degrees, 0.degrees).round(1))
-        assertEquals(Quaternion(0.0, 0.0, 0.7, 0.7).round(1), Quaternion().setEuler(0.degrees, 0.degrees, 90.degrees).round(1))
+        assertEquals(Quaternion(0.7f, 0.0f, 0.0f, 0.7f).round(1), Quaternion().setEuler(90.degrees, 0.degrees, 0.degrees).round(1))
+        assertEquals(Quaternion(0.0f, 0.7f, 0.0f, 0.7f).round(1), Quaternion().setEuler(0.degrees, 90.degrees, 0.degrees).round(1))
+        assertEquals(Quaternion(0.0f, 0.0f, 0.7f, 0.7f).round(1), Quaternion().setEuler(0.degrees, 0.degrees, 90.degrees).round(1))
 
-        assertEquals(EulerRotation(90.degrees, 0.degrees, 0.degrees), EulerRotation().setQuaternion(Quaternion().setEuler(90.degrees, 0.degrees, 0.degrees)), 0.1)
-        assertEquals(EulerRotation(0.degrees, 90.degrees, 0.degrees), EulerRotation().setQuaternion(Quaternion().setEuler(0.degrees, 90.degrees, 0.degrees)), 0.1)
-        assertEquals(EulerRotation(0.degrees, 0.degrees, 90.degrees), EulerRotation().setQuaternion(Quaternion().setEuler(0.degrees, 0.degrees, 90.degrees)), 0.1)
+        assertEquals(EulerRotation(90.degrees, 0.degrees, 0.degrees), EulerRotation().setQuaternion(Quaternion().setEuler(90.degrees, 0.degrees, 0.degrees)), 0.1f)
+        assertEquals(EulerRotation(0.degrees, 90.degrees, 0.degrees), EulerRotation().setQuaternion(Quaternion().setEuler(0.degrees, 90.degrees, 0.degrees)), 0.1f)
+        assertEquals(EulerRotation(0.degrees, 0.degrees, 90.degrees), EulerRotation().setQuaternion(Quaternion().setEuler(0.degrees, 0.degrees, 90.degrees)), 0.1f)
     }
 
     @Test
     fun testInvert() {
-        val mat = Matrix3D().setTRS(Position3D(1, 2, 3), Quaternion().setEuler(15.degrees, 30.degrees, 60.degrees), Scale3D(1, 2, 3))
+        val mat = Matrix3D().setTRS(Position3D(1f, 2f, 3f), Quaternion().setEuler(15.degrees, 30.degrees, 60.degrees), Scale3D(1f, 2f, 3f))
         val inv = Matrix3D().invert(mat)
         assertEquals(
             Matrix3D().round(2).toString(),
@@ -222,7 +221,7 @@ class Matrix3DTest {
         )
     }
 
-    fun assertEquals(a: EulerRotation, b: EulerRotation, delta: Double = 0.01) {
+    fun assertEquals(a: EulerRotation, b: EulerRotation, delta: Float = 0.01f) {
         assertTrue("$a\n$b\na!=b // delta=$delta") {
             abs(a.x.degrees - b.x.degrees) <= delta &&
                 abs(a.y.degrees - b.y.degrees) <= delta &&
@@ -230,7 +229,7 @@ class Matrix3DTest {
         }
     }
 
-    fun assertEquals(a: Quaternion, b: Quaternion, delta: Double = 0.01) {
+    fun assertEquals(a: Quaternion, b: Quaternion, delta: Float = 0.01f) {
         assertTrue("$a\n$b\na!=b // delta=$delta") {
             abs(a.x - b.x) <= delta &&
                 abs(a.y - b.y) <= delta &&
@@ -247,10 +246,9 @@ class Matrix3DTest {
         assertTrue("$a != $b // delta=$delta") { abs(a - b) <= delta }
     }
 
-    fun Vector3D.round(digits: Int = 0) = setTo(round(x, digits), round(y, digits), round(z, digits), round(w, digits))
-    fun Quaternion.round(digits: Int = 0) = setTo(round(x, digits), round(y, digits), round(z, digits), round(w, digits))
-    fun Matrix3D.round(digits: Int = 0) = setToMap { round(it, digits) }
+    private fun Vector3D.round(digits: Int = 0) = apply { setTo(round(x, digits), round(y, digits), round(z, digits)) }
+    private fun Quaternion.round(digits: Int = 0) = setTo(round(x, digits), round(y, digits), round(z, digits), round(w, digits))
+    private fun Matrix3D.round(digits: Int = 0) = setToMap { round(it, digits) }
 
-    fun round(x: Float, digits: Int) = (kotlin.math.round(x * 10.0.pow(digits)) / 10.0.pow(digits)).toFloat()
-    fun round(x: Double, digits: Int) = kotlin.math.round(x * 10.0.pow(digits)) / 10.0.pow(digits)
+    fun round(x: Float, digits: Int) = (kotlin.math.round(x * 10f.pow(digits)) / 10f.pow(digits))
 }
