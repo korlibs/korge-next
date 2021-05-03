@@ -9,7 +9,7 @@ import com.soywiz.korio.internal.*
 import com.soywiz.korio.internal.max2
 
 class StrReader(val str: String, val file: String = "file", var pos: Int = 0) {
-    private val tempCharArray = CharArray(str.length)
+    private val tempCharArray = FastCharArray(str.length)
 
     companion object {
         fun literals(vararg lits: String): Literals = Literals.fromList(lits.toList().toTypedArray())
@@ -71,6 +71,7 @@ class StrReader(val str: String, val file: String = "file", var pos: Int = 0) {
         return this
     }
     fun readChar(): Char = if (hasMore) this.str[posSkip(1)] else '\u0000'
+    fun readFastChar(): FastChar = if (hasMore) this.str.getFast(posSkip(1)) else (0).toFastChar()
     fun read(): Char = if (hasMore) this.str[posSkip(1)] else '\u0000'
     // @TODO: https://youtrack.jetbrains.com/issue/KT-29577
     private fun posSkip(count: Int): Int {
@@ -249,20 +250,27 @@ class StrReader(val str: String, val file: String = "file", var pos: Int = 0) {
     fun readStringLit(reportErrors: Boolean = true): String {
         val out = tempCharArray
         var outp = 0
-        val quotec = read()
+        val quotec = readFastChar().code
         when (quotec) {
-            '"', '\'' -> Unit
+            '"'.code, '\''.code -> Unit
             else -> invalidOp("Invalid string literal")
         }
         var closed = false
         loop@ while (hasMore) {
-            when (val c = read()) {
-                '\\' -> {
-                    val cc = read()
+            when (val c = readFastChar().code) {
+                '\\'.code -> {
+                    val cc = readFastChar().code
                     out[outp++] = when (cc) {
-                        '\\' -> '\\'; '/' -> '/'; '\'' -> '\''; '"' -> '"'
-                        'b' -> '\b'; 'f' -> '\u000c'; 'n' -> '\n'; 'r' -> '\r'; 't' -> '\t'
-                        'u' -> readFixedSizeInt(4, 16).toChar()
+                        '\\'.code -> '\\'.fast
+                        '/'.code -> '/'.fast
+                        '\''.code -> '\''.fast
+                        '"'.code -> '"'.fast
+                        'b'.code -> '\b'.fast
+                        'f'.code -> '\u000c'.fast
+                        'n'.code -> '\n'.fast
+                        'r'.code -> '\r'.fast
+                        't'.code -> '\t'.fast
+                        'u'.code -> readFixedSizeInt(4, 16).toFastChar()
                         else -> throw IOException("Invalid char '$cc'")
                     }
                 }
@@ -271,14 +279,14 @@ class StrReader(val str: String, val file: String = "file", var pos: Int = 0) {
                     break@loop
                 }
                 else -> {
-                    out[outp++] = c
+                    out[outp++] = c.toFastChar()
                 }
             }
         }
         if (!closed && reportErrors) {
             throw RuntimeException("String literal not closed! '${this.str}'")
         }
-        return String_fromCharArray(out, 0, outp)
+        return out.concatToString(0, outp)
     }
 
 

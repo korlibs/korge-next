@@ -2,6 +2,8 @@
 
 package com.soywiz.kds
 
+import org.khronos.webgl.*
+
 actual inline fun <T> Any?.fastCastTo(): T = this.asDynamic()
 
 actual class FastIntMap<T>(dummy: Boolean)
@@ -243,4 +245,28 @@ public actual open class FastArrayList<E> internal constructor(private var array
             throw IndexOutOfBoundsException("index: $index, size: $size")
         }
     }
+}
+
+
+@JsName("String")
+external class JsString {
+    fun charCodeAt(index: Int): Int
+}
+
+@JsName("TextDecoder")
+external class TextDecoder(encoding: String) {
+    fun decode(buffer: dynamic): String
+}
+
+private val utf16Decoder = TextDecoder("utf-16")
+
+actual fun FastCharArray.concatToString(startIndex: Int, endIndex: Int): String {
+    // @TODO: This shouldn't be required
+    val temp = Int16Array(endIndex - startIndex)
+    for (n in 0 until temp.length) temp[n] = this.data[startIndex + n].toShort()
+    return utf16Decoder.decode(temp)
+}
+
+actual fun String.getFast(index: Int): FastChar {
+    return this.unsafeCast<JsString>().charCodeAt(index).toFastChar()
 }
